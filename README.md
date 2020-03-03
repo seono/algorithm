@@ -1,5 +1,4 @@
-"# algorithm"
-
+#Algorithm
 
 PART.1 BRUTE FORCE
 PART.2 DYNAMIC PROGRAMMING
