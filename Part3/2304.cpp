@@ -1,7 +1,6 @@
 #include<iostream>
 #include<cstdlib>
 using namespace std;
-typedef long long ll;
 
 template<typename T>
 class ListNode {
@@ -10,7 +9,6 @@ public:
 	ListNode<T>* next;
 	ListNode<T>() : next(nullptr) {}
 	ListNode<T>(T value1, ListNode<T>* next1) : value(value1), next(next1) {}
-	ListNode<T>(T value1, int p, ListNode<T>* next1) : value(value1), next(next1) {}
 };
 
 template<typename T>
@@ -51,33 +49,44 @@ public:
 	}
 };
 
+/*
+왼쪽에서도 오름차순 오른쪽에서 오름차순
+*/
+
+
 int main() {
-	Stack<ll> t;
 	int N;
+	Stack<int> S;
+	int ans = 0;
+	int arr[1002]={ 0, };
 	scanf("%d", &N);
-	ll* arr = new ll[N + 2];
-	arr[0] = 0;
-	arr[N + 1] = 0;
-	for (int i = 1; i <= N; i++) {
-		scanf("%lld", &arr[i]);
+	if (N == 0) {
+		puts("0"); return 0;
 	}
-	t.push(0);
-	ll r = 0;
-	//오름차순으로 저장
-	//stack top을 빼면서 height에 저장
-	//오름차순 저장이었으니
-	//가로는 stack에서 방금 뺀 index이전 index에서(t.top())현재 index까지(i-1) 
-	//세로는 저장된 height로 직사각형이 만들어진다.
-	for (int i = 1; i <= N+1; i++) {
-		while (t.head&&arr[t.top()] > arr[i]) {
-			ll height = arr[t.top()];
-			t.pop();
-			ll width = i - t.top()-1;
-			ll ans = height * width;
-			r = r > ans ? r : ans;
-		}
-		t.push(i);
+	for (int i = 0; i < N; i++) {
+		int pos;
+		scanf("%d", &pos);
+		scanf("%d", &arr[pos]);
 	}
-	cout << r << endl;
+	int longest=0, end=1000;
+	int start = 0;
+	while (arr[start]==0)start++;
+	while (arr[end]==0)end--;
+	int tmp = 0;
+	while (tmp < 1001) {
+		if (arr[longest] < arr[tmp])longest = tmp;
+		tmp++;
+	}
+	S.push(arr[start]);
+	for (int i = start; i <= longest; i++) {
+		if (arr[i] > S.top())S.push(arr[i]);
+		ans += S.top();
+	}
+	S.push(arr[end]);
+	for (int i = end; i > longest; i--) {
+		if (arr[i] > S.top())S.push(arr[i]);
+		ans += S.top();
+	}
+	printf("%d", ans);
 	return 0;
 }
