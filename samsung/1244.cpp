@@ -43,30 +43,39 @@ void change_str(vector<int> &v, int c_num, string& input, int first) {
 		v.push_back(stoi(input));
 		return;
 	}
+	//0회면 input
 	if (stoi(input) == v[0]) {
 		for (int a = 0; a < input.size(); a++) {
 			if (input[a] == input[a + 1]) {
 				v.clear();
 				v.push_back(stoi(input));
 				v.push_back(stoi(input));
+				//최대인 input에서 같은 숫자가 있을때 남은 횟수 상관없이 input이 최대
 				return;
 			}
 		}
+		//바꾸기 남았는데 input이 최대일때
 		v.clear();
 		int temp = input[input.size() - 1];
+		//temp는 input 마지막수
 		input[input.size() - 1] = input[input.size() - 2];
 		input[input.size() - 2] = temp;
+		//마지막수와 마지막에서 두번째수 swap
 		v.push_back(stoi(input));
 		v.push_back(stoi(input));
 		return;
 	}
+	//input이 최대가 아닐때
+	//앞순서부터 max로 change되어있는것들 제외
 	for (a=a+1; a < input.size(); a++) {
 		if (input[max] < input[a])max = a;
 	}
+	//max가 이미 배치되어있을경우 다음으로 넘어가고
 	if (max == first) {
 		change_str(v, c_num, input, first + 1);
 		return;
 	}
+	//아님 first에서부터 max인 idx모두 first와 바꾸고 bfs
 	for (int x = first; x < input.size(); x++) {
 		if (input[x] == input[max]) {
 			string t_input = input;
@@ -101,11 +110,13 @@ int main(int argc, char** argv)
 			t[a] = temp;
 		}
 		v.push_back(stoi(t));
+		//최대구해서 v에넣어놓고
 		change_str(v, c_num, input, 0);
 		int max = 1;
 		for (int a = 2; a < v.size(); a++) {
 			if (v[a] > v[max])max = a;
 		}
+		//v에서 0을제외하고 1부터 검색해서 최대찾음
 		cout <<"#"<<test_case<<" " <<v[max] << endl;
 		v.clear();
 	}
