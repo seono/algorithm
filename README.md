@@ -13,3 +13,5 @@
 >PART.6 BFS
 
 >PART.7 GREEDY
+
+>PART.8 Divide and Conquer
