@@ -15,3 +15,8 @@
 >PART.7 GREEDY
 
 >PART.8 Divide and Conquer
+
+>PART.9 BINARY SEARCH
+
+>ELSE 나중에 다시 볼 것
+
