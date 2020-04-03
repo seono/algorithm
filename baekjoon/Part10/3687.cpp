@@ -1,24 +1,45 @@
 #include<iostream>
 #include<cstring>
-#include<vector>
 //2 5 5 4 5 6 3 7 6 6
 using namespace std;
-typedef long long ll;
-int arr[6][2] = { 0, };
-ll ans = 0;
-//합, 자리수, 남은 성냥 개비 수
-//성냥 최대한 쓰는 수부터 사용하여 최대한 자리수를 줄이고
-//사용한 조합을 변경
-//3 7 7 이용하는경우가 4 6 7 이용할 때 보다 더 크다.
-//dp사용하는 걸로 변경
-void dp(ll hap, int cnt) {
-	if (ans > 0)return;
-	if (cnt == 0) {
-		ans = hap;
+int dp_arr[101][53];
+int num;
+int arr[6][2] = { {0,6},{1,2},{2,5},{4,4},{7,3},{8,7} };
+int arr2[6][2] = { {1,2},{2,5},{4,4},{6,6},{7,3},{8,7} };
+//n개 성냥개비, k자리 수
+int match(int n,int k) {
+	int& ret = dp_arr[n][k];
+	if (ret != -1)return ret;
+	if (n == 0 && k == 0) return ret = 1;
+	if (k == 0 || n == 0) return ret = 0;
+	for (int i = 2; i< 8; i++) {
+		if (n - i < 0)continue;
+		ret = match(n - i, k - 1);
+		if (ret>0)return ret;
 	}
-	for (int i = 5; i >= 0; i--) {
-		if (cnt >= (i + 2)) {
-			dp(hap * 10 + arr[i][0], cnt - (i + 2));
+	return ret;
+}
+
+void backtrackAns(int n, int k, bool firstPos) {
+	if (n==0||k == 0)return;
+	if (firstPos) {
+		for (int i = 0; i < 6; i++) {
+			if (n - arr2[i][1] < 0)continue;
+			if (match(n - arr2[i][1], k - 1)>0) {
+				printf("%d", arr2[i][0]);
+				backtrackAns(n - arr2[i][1], k - 1, false);
+				return;
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < 6; i++) {
+			if (n - arr[i][1] < 0)continue;
+			if (match(n - arr[i][1], k - 1) > 0) {
+				printf("%d", arr[i][0]);
+				backtrackAns(n - arr[i][1], k - 1, false);
+				return;
+			}
 		}
 	}
 }
@@ -26,29 +47,14 @@ void dp(ll hap, int cnt) {
 int main() {
 	int N;
 	scanf("%d", &N);
-	arr[0][0] = 1;
-	arr[1][0] = 7;
-	arr[2][0] = 4;
-	arr[3][0] = 2;
-	arr[4][0] = 0;
-	arr[5][0] = 8;
 	while (N--) {
 		int n;
-		ans = 0;
 		scanf("%d", &n);
-		if (n>=2 && n <= 8&&n!=6) {
-			printf("%d ", arr[n - 2][0]);
-		}
-		if (n == 6)printf("6 ");
-		if (n == 9)printf("10 ");
-		if (n > 9) {
-			dp(0, n);
-			while (ans) {
-				printf("%lld", ans % 10);
-				ans = ans / 10;
-			}
-			printf(" ");
-		}
+		int idx;
+		memset(dp_arr, -1, sizeof(dp_arr));
+		for (idx = 1; idx < 53; idx++)if (match(n, idx))break;
+		backtrackAns(n, idx, true);
+		printf(" ");
 		if(n%2==1){
 			printf("7");
 			n = n - 3;
