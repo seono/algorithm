@@ -1,49 +1,34 @@
 import sys
 import heapq
-from collections import deque
 input = sys.stdin.readline
 output = sys.stdout.write
 
 n, m, k = map(int,input().split())
 
 adj = [[] for _ in range(n+1)]
+
+visited = [[] for _ in range(1001)]
+visited[1].append(0)
 for _ in range(m):
     a,b,c = map(int,input().split())
     adj[a].append([b,c])
 
-def bfs(b):
-    visited = [False]*(n+1)
-    st = deque([])
-    for x,_ in adj[1]:
-        visited[x]=True
-        st.append(x)
-    while st:
-        p = st.popleft()
-        if p==b:
-            return True
-        for nx,_ in adj[p]:
-            if visited[nx]:continue
-            visited[nx]=True
-            st.append(nx)
-    return False
-
-def bfs_cnt(b,c):
+def dijkstra():
     st = [[0,1]]
-    visited = [0]*(n+1)
     while st:
         cnt,p = heapq.heappop(st)
-        if p==b:
-            c-=1
-            if c==0:
-                return cnt
-        visited[p]+=1
-        if visited[p]>c:
-            continue
         for nx,ncnt in adj[p]:
-            heapq.heappush(st,[cnt+ncnt,nx])
-
+            ncnt+=cnt
+            if len(visited[nx])<k:
+                heapq.heappush(visited[nx],-ncnt)
+                heapq.heappush(st,[ncnt,nx])
+            elif visited[nx][0]<-ncnt:
+                heapq.heappop(visited[nx])
+                heapq.heappush(visited[nx],-ncnt)
+                heapq.heappush(st,[ncnt,nx])
+dijkstra()
 for i in range(1,n+1):
-    if bfs(i):
-        output("%d\n"%bfs_cnt(i,k))
-    else:
+    if len(visited[i])!=k:
         output("-1\n")
+    else:
+        output("%d\n"%-visited[i][0])
