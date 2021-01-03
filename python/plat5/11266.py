@@ -11,7 +11,6 @@ for _ in range(E):
     a,b = map(int,input().split())
     adj[a].append(b)
     adj[b].append(a)
-visited = [0]*(V+1)
 dfn = [None]*(V+1)
 low = [sys.maxsize]*(V+1)
 ans = [False]*(V+1)
