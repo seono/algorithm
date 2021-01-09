@@ -3,11 +3,9 @@ input = sys.stdin.readline
 
 T = int(input())
 def gcd(n1,n2):
+    if n1<n2:n1,n2=n2,n1
     while n2!=0:
-        if n1<n2:
-            n1,n2=n2,n1
-        t = n1 % n2
-        n1,n2=n2,t
+        n1,n2=n2,n1%n2
     return n1
 while T>0:
     T-=1
