@@ -3,51 +3,51 @@ from collections import deque
 input = sys.stdin.readline
 
 N, K = map(int,input().split())
-dx,dy = [0,0,1,-1],[-1,1,0,0]
+d = [(-1,0),(0,1),(1,0),(0,-1)]
 
 arr = [[0]*N for _ in range(N)]
-u = [[num,1] for num in range(K+1)]
-def find(x):
-    if u[x][0]!=x:
-        u[x][0]=find(u[x][0])
-    return u[x][0]
+u = [num for num in range(K+1)]
 
-def Union(x,y):
-    x=find(x)
-    y=find(y)
-    if x!=y:
-        if u[x][1]<u[y][1]:x,y=y,x
-        u[y][0]=x
-        u[x][1]+=u[y][1]
-    return u[x][1]
+def find(x):
+    if u[x]!=x:
+        u[x]=find(u[x])
+    return u[x]
+
 def bfs():
+    global K
     cnt = 0
-    while True:
-        l = len(st)
+    while st:
+        for y,x in st:
+            cur = arr[y][x]
+            for dy,dx in d:
+                ny,nx=y+dy,x+dx
+                if 0<=ny<N and 0<=nx<N and arr[ny][nx]:
+                    near = arr[ny][nx]
+                    cur_root = find(cur)
+                    near_root = find(near)
+                    if cur_root==near_root:continue
+                    K-=1
+                    if cur_root<near_root:
+                        u[near_root] = cur_root
+                    else:
+                        u[cur_root] = near_root
+        if K==1:
+            return cnt
         cnt+=1
-        flag = False
+        l = len(st)
         while l:
             l-=1
-            y,x,p = st.popleft()
-            visited[y][x]=1
-            for i in range(4):
-                ny,nx=y+dy[i],x+dx[i]
-                if 0<=ny<N and 0<=nx<N:
-                    if arr[ny][nx]:
-                        if arr[ny][nx]!=p:
-                            if Union(arr[ny][nx],p)==K:
-                                flag=True
-                                if visited[ny][nx]:
-                                    cnt-=1
-                    else:
-                        st.append([ny,nx,p])
-                        arr[ny][nx]=p
-        if flag:return cnt
+            y,x = st.popleft()
+            for dy,dx in d:
+                ny,nx=y+dy,x+dx
+                if 0<=ny<N and 0<=nx<N and arr[ny][nx]==0:
+                    st.append((ny,nx))
+                    arr[ny][nx]=arr[y][x]
+    return cnt
 
-visited = [[0]*N for _ in range(N)]
 st = deque()
-for num in range(1,K+1):
+for num in range(K):
     x,y = map(int,input().split())
-    arr[y-1][x-1]=num
-    st.append([y-1,x-1,num])
+    arr[y-1][x-1]=num+1
+    st.append((y-1,x-1))
 print(bfs())
