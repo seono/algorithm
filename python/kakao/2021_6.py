@@ -1,38 +1,67 @@
 import sys
 input = sys.stdin.readline
-def solution(sales, links):
-    adj = [[] for _ in range(len(sales))]
-    for a,b in links:
-        adj[a-1].append(b-1)
-    dp_arr = [[-1,-1] for _ in range(len(sales))]
-    def dp(now,check):
-        if len(adj[now])==0:
+import heapq
+d = [(0,-1),(0,1),(-1,0),(1,0)]
+INF = 1e9
+dp_arr = [[[-1]*(1<<7) for _ in range(4)] for _ in range(4)]
+    
+def solution(board, r, c):
+    board_dict = {}
+    
+    def dfs(y,x,y1,x1,n):
+        st = [(0,y,x)]
+        visited = [[False]*4 for _ in range(4)]
+        visited[y][x]=True
+        while st:
+            cnt,y,x = heapq.heappop(st)
+            if y==y1 and x==x1:
+                return cnt
+            for dy,dx in d:
+                ny,nx=y+dy,x+dx
+                if 0<=ny<4 and 0<=nx<4:
+                    if not visited[ny][nx]:
+                        visited[ny][nx]=True
+                        heapq.heappush(st,(cnt+1,ny,nx))
+                    if board[ny][nx] and (1<<board[ny][nx])&n:continue
+                else:continue
+                ny,nx = ny+dy,nx+dx
+                if 0<=ny<4 and 0<=nx<4:
+                    if board[ny][nx] and (1<<board[ny][nx])&n:
+                        if not visited[ny][nx]:
+                            visited[ny][nx]=True
+                            heapq.heappush(st,(cnt+1,ny,nx))
+                    else:
+                        ny,nx=ny+dy,nx+dx
+                        if 0<=ny<4 and 0<=nx<4:
+                            if not visited[ny][nx]:
+                                visited[ny][nx]=True
+                                heapq.heappush(st,(cnt+1,ny,nx))
+                        else:
+                            heapq.heappush(st,(cnt+1,ny-dy,nx-dx))
+    answer = 0
+    def dp(y,x,n):
+        if n==0:
             return 0
-        if dp_arr[now][check]!=-1:return dp_arr[now][check]
-        #check True -> 팀원들 맘대로
-        #check False -> 팀원이 다안가면 팀중에 최소매출인원 무조건 보냄
-        res = 0
-        if check:
-            for nx in adj[now]:
-                res+=min(dp(nx,False),dp(nx,True)+sales[nx])
-        else:
-            flag = False
-            tmp = sales[now]
-            for nx in adj[now]:
-                m1 = dp(nx,False)
-                m2 = dp(nx,True)+sales[nx]
-                if m2<=m1:
-                    flag=True
-                    res+=m2
-                else:
-                    if m2-m1<tmp:
-                        tmp = m2-m1
-                    res+=m1
-            if not flag:
-                res+=tmp
-        dp_arr[now][check]=res
+        if dp_arr[y][x][n]!=-1:
+            return dp_arr[y][x][n]
+        res = INF
+        for k,v in board_dict.items():
+            if (1<<k) & n:
+                y1,x1,y2,x2=v
+                res = min(res,dp(y1,x1,n^(1<<k))+dfs(y,x,y2,x2,n)+dfs(y2,x2,y1,x1,n),dp(y2,x2,n^(1<<k))+dfs(y,x,y1,x1,n)+dfs(y1,x1,y2,x2,n))
+        dp_arr[y][x][n]=res
         return res
-    answer = dp(0,False)
+    n=0
+    for y,b in enumerate(board):
+        for x,num in enumerate(b):
+            if num:
+                n=n|(1<<num)
+                if num in board_dict:
+                    board_dict[num].extend([y,x])
+                else:
+                    board_dict[num]=[y,x]
+    answer = dp(r,c,n)
+    answer += len(board_dict)*2
     return answer
 
 r,c=map(int,input().split())
