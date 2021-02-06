@@ -50,7 +50,6 @@ for i,tmp in enumerate(scc_arr):
             new_adj[i].append(scc_num[nx])
             indgree[scc_num[nx]]+=1
 def dfs():
-    st = deque([new_s])
     can = [False]*SN
     can[new_s]=True
     finished[new_s]=len(scc_arr[new_s])

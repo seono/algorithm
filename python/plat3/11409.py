@@ -33,7 +33,7 @@ def sol():
     ans = 0
     while True:
         visited = [-1]*(Total_num)
-        dist = [1e9]*Total_num
+        dist = [-1e9]*Total_num
         chk = [False]*Total_num
         q = deque([S])
         dist[S]=0
@@ -41,7 +41,7 @@ def sol():
             n = q.popleft()
             chk[n]=False
             for nx in adj[n]:
-                if cap[n][nx]>fl[n][nx] and dist[nx]>dist[n]+d[n][nx]:
+                if cap[n][nx]>fl[n][nx] and dist[nx]<dist[n]+d[n][nx]:
                     dist[nx]=dist[n]+d[n][nx]
                     visited[nx]=n
                     if not chk[nx]:

@@ -49,7 +49,6 @@ def dfs(idx):
 
 ans = 0
 for i in range(1,r):
-    if b[i]==-1:
-        visited = [False]*r
-        if dfs(i):ans+=1
+    visited = [False]*r
+    if dfs(i):ans+=1
 print(ans)
