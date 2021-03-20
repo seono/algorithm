@@ -11,7 +11,7 @@ cd = {}
 for i in range(N):
     for j in range(N):
         ab.append(a[i]+b[j])
-        _cd = c[i]+d[i]
+        _cd = c[i]+d[j]
         cd[_cd] = cd.get(_cd,0)+1
 ans = 0
 for num in ab:
